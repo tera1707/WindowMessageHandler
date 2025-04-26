@@ -14,7 +14,7 @@
 void log(HWND hwnd, UINT msg)
 {
 	wchar_t buf[256];
-	GetWindowText(hwnd, buf, sizeof(buf));
+	GetWindowText(hwnd, buf, sizeof(buf)/ sizeof(buf[0]));
 	auto title = std::wstring(buf);
 	OutputDebugString((title + L" : " + std::to_wstring(msg) + L"\r\n").c_str());
 }
