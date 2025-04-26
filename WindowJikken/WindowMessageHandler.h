@@ -1,6 +1,8 @@
 #pragma once
 #include <windows.h>
 #include <thread>
+# include <functional>
+# include <map>
 
 class WindowMessageHandler
 {
@@ -9,15 +11,16 @@ public:
 	~WindowMessageHandler();
 
 	HWND CreateSpecifiedTitleClassWindow(const wchar_t* windowTitle, const wchar_t* className);
-	//int ShowSpecifiedTitleClassWindow(HWND hWnd);
-
+	void RegisterFunction(UINT msg, std::function<void(HWND, UINT, WPARAM, LPARAM)> func);
 	void TerminateSpecifiedTitleClassWindow();
 
-
-
 private:
-	//LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	std::thread th_b;
 	HWND hWnd;
+
+	std::thread MsgLoopThread;
+	std::map<UINT, std::function<void(HWND, UINT, WPARAM, LPARAM)>> MessageFunctionMap;
+
+	static LRESULT CALLBACK WndProcForGetThisPtr(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 };
 
