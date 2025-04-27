@@ -12,10 +12,12 @@ public:
 
 	HWND CreateSpecifiedTitleClassWindow(const wchar_t* windowTitle, const wchar_t* className);
 	void RegisterFunction(UINT msg, std::function<void(HWND, UINT, WPARAM, LPARAM)> func);
-	void TerminateSpecifiedTitleClassWindow();
+	void RequestCloseSpecifiedTitleClassWindow();
+	void WaitForCloseSpecifiedTitleClassWindow();
 
 private:
 	HWND hWnd;
+	HPOWERNOTIFY hPowerNotify;
 
 	std::thread MsgLoopThread;
 	std::map<UINT, std::function<void(HWND, UINT, WPARAM, LPARAM)>> MessageFunctionMap;

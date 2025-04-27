@@ -1,9 +1,10 @@
 ﻿#include <iostream>
 #include <windows.h>
-#include "WindowMessageHandler.h"
 #include <thread>
 #include <map>
 #include <string>
+#include "WindowMessageHandler.h"
+#include "LogOnDesktop.h"
 
 // 初めての Windows プログラム
 // https://learn.microsoft.com/ja-jp/windows/win32/learnwin32/your-first-windows-program
@@ -19,27 +20,110 @@ void log(HWND hwnd, UINT msg)
 	OutputDebugString((title + L" : " + std::to_wstring(msg) + L"\r\n").c_str());
 }
 
+LogOnDesktop lod;
+
 int main()
 {
-	WindowMessageHandler windowMessageHandler1;
-    WindowMessageHandler windowMessageHandler2;
+	// メッセージ受信用見えないウインドウ作成
+	WindowMessageHandler wmh;
+	wmh.CreateSpecifiedTitleClassWindow(L"MyWindowTitle1", L"MyClassName1");
 
-	windowMessageHandler1.RegisterFunction(WM_APP + 1, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) { log(hwnd, msg); });
-	windowMessageHandler1.RegisterFunction(WM_APP + 2, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) { log(hwnd, msg); });
-	windowMessageHandler2.RegisterFunction(WM_APP + 1, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) { log(hwnd, msg); });
-	windowMessageHandler2.RegisterFunction(WM_APP + 2, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) { log(hwnd, msg); });
-	windowMessageHandler2.RegisterFunction(WM_APP + 3, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) { log(hwnd, msg); });
+	// メッセージ受信時イベント登録
+	wmh.RegisterFunction(WM_APP + 1, [&](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+		{
+			log(hwnd, msg);
+			lod.WriteLine(L"WM_APP + 1");
+			wmh.RequestCloseSpecifiedTitleClassWindow();
+		});
 
-    windowMessageHandler1.CreateSpecifiedTitleClassWindow(L"MyWindowTitle1", L"MyClassName1");
-    windowMessageHandler2.CreateSpecifiedTitleClassWindow(L"MyWindowTitle2", L"MyClassName2");
-    
-    // 終了させないよう入力待ちにする
-    int a;
-    std::cin >> a;
+	wmh.RegisterFunction(WM_POWERBROADCAST, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+		{
+			// https://learn.microsoft.com/ja-jp/windows/win32/power/wm-powerbroadcast-messages
+			// https://learn.microsoft.com/ja-jp/windows/win32/power/wm-powerbroadcast
+			//log(hwnd, msg);
 
-    // ウインドウ終了処理
-	windowMessageHandler1.TerminateSpecifiedTitleClassWindow();
-    windowMessageHandler2.TerminateSpecifiedTitleClassWindow();
+			if (wp == PBT_POWERSETTINGCHANGE)
+			{
+				auto pbs = (POWERBROADCAST_SETTING*)lp;
+
+				if (pbs->PowerSetting == GUID_CONSOLE_DISPLAY_STATE)
+				{
+					// ディスプレイON/OFF
+					if (pbs->Data != 0)
+						lod.WriteLine(L"ディスプレイON");
+					else 
+						lod.WriteLine(L"ディスプレイOFF");
+				}
+			}
+			else if (wp == PBT_APMSUSPEND)
+			{
+				// サスペンド(スリープ)
+				lod.WriteLine(L"サスペンド(スリープ)");
+			}
+			else if (wp == PBT_APMRESUMESUSPEND)
+			{
+				// レジューム
+				lod.WriteLine(L"サスペンド");
+			}
+			else if (wp == PBT_APMRESUMEAUTOMATIC)
+			{
+				// レジューム(Automatic？)
+				lod.WriteLine(L"PBT_APMRESUMEAUTOMATIC");
+			}
+
+		});
+
+	wmh.RegisterFunction(WM_QUERYENDSESSION, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+		{
+			// https://learn.microsoft.com/ja-jp/windows/win32/shutdown/wm-queryendsession
+			//log(hwnd, msg);
+			lod.WriteLine(L"WM_QUERYENDSESSION");
+		});
+
+	wmh.RegisterFunction(WM_ENDSESSION, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+		{
+			// https://learn.microsoft.com/ja-jp/windows/win32/shutdown/wm-endsession
+			//log(hwnd, msg);
+			lod.WriteLine(L"WM_ENDSESSION ");
+		}); 
+
+	wmh.RegisterFunction(WM_USERCHANGED, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+		{
+			// https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-userchanged
+			//log(hwnd, msg);
+			lod.WriteLine(L"WM_USERCHANGED ");
+		});
+
+	wmh.RegisterFunction(WM_WTSSESSION_CHANGE, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+		{
+			//lpはセッションIDが入っている
+			// https://learn.microsoft.com/ja-jp/windows/win32/termserv/wm-wtssession-change
+			//log(hwnd, msg);
+			lod.WriteLine(L"WM_WTSSESSION_CHANGE ");
+
+			auto msgTable = std::map<WPARAM, std::wstring>{
+				{ WTS_CONSOLE_CONNECT, L"WTS_CONSOLE_CONNECT"},
+				{ WTS_CONSOLE_DISCONNECT, L"WTS_CONSOLE_DISCONNECT"},
+				{ WTS_REMOTE_CONNECT, L"WTS_REMOTE_CONNECT" },
+				{ WTS_REMOTE_DISCONNECT, L"WTS_REMOTE_DISCONNECT" },
+				{ WTS_SESSION_LOGON, L"WTS_SESSION_LOGON" },
+				{ WTS_SESSION_LOGON, L"WTS_SESSION_LOGOFF" },
+				{ WTS_SESSION_LOCK, L"WTS_SESSION_LOCK" },//https://blog.kaorun55.com/entry/20080212/1202829851
+				{ WTS_SESSION_UNLOCK, L"WTS_SESSION_UNLOCK" },
+				{ WTS_SESSION_REMOTE_CONTROL, L"WTS_SESSION_REMOTE_CONTROL" },
+				{ WTS_SESSION_CREATE, L"WTS_SESSION_CREATE" },
+				{ WTS_SESSION_TERMINATE, L"WTS_SESSION_TERMINATE" },
+			};
+
+			//https://learn.microsoft.com/ja-jp/windows/win32/api/winuser/ns-winuser-wtssession_notification
+			//auto sessionIdInfo = (PWTSSESSION_NOTIFICATION)lp;
+
+			if (msgTable.count(wp) > 0)
+				lod.WriteLine((L" " + msgTable[wp] + L" セッション：" + std::to_wstring(lp)).c_str());
+		});
+
+	// ウインドウ終了待ち
+	wmh.WaitForCloseSpecifiedTitleClassWindow();
 
 	return 0;
 }

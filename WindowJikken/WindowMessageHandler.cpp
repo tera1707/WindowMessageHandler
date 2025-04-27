@@ -1,15 +1,19 @@
 
 #include "WindowMessageHandler.h"
 #include <iostream>
+#include <wtsapi32.h>
+
+//WTSRegisterSessionNotification を使うために必要
+#pragma comment(lib, "Wtsapi32.lib")
 
 WindowMessageHandler::WindowMessageHandler()
 {
     hWnd = NULL;
+    hPowerNotify = NULL;
 }
 
 WindowMessageHandler::~WindowMessageHandler()
 {
-
 }
 
 /// <summary>
@@ -57,9 +61,23 @@ LRESULT CALLBACK WindowMessageHandler::WndProc(HWND hwnd, UINT uMsg, WPARAM wPar
 {
     switch (uMsg)
     {
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            return (LRESULT)0;
+    case WM_CREATE:
+    {
+        hPowerNotify = RegisterPowerSettingNotification(hwnd, &GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE);
+        //WTSRegisterSessionNotification(hwnd, NOTIFY_FOR_THIS_SESSION); 
+        WTSRegisterSessionNotification(hwnd, NOTIFY_FOR_ALL_SESSIONS);
+        break;
+    }
+    case WM_DESTROY:
+    {
+        if (hPowerNotify != NULL)
+            UnregisterPowerSettingNotification(hPowerNotify);
+
+        WTSUnRegisterSessionNotification(hwnd);
+
+        PostQuitMessage(0);
+        return (LRESULT)0;
+    }
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -100,6 +118,7 @@ HWND WindowMessageHandler::CreateSpecifiedTitleClassWindow(const wchar_t* window
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+        OutputDebugString(L"Thread Finished.");
     });
 
     return 0;
@@ -108,13 +127,15 @@ HWND WindowMessageHandler::CreateSpecifiedTitleClassWindow(const wchar_t* window
 /// <summary>
 /// 終了処理
 /// </summary>
-void WindowMessageHandler::TerminateSpecifiedTitleClassWindow()
+void WindowMessageHandler::RequestCloseSpecifiedTitleClassWindow()
 {
     // ウインドウが閉じていない場合は閉じに行く
 	auto ret = SendMessage(hWnd, WM_CLOSE, 0, 0);
-
-    // ウインドウのMsgループ用スレッドの終了待ち
-	MsgLoopThread.join();
 }
 
+void WindowMessageHandler::WaitForCloseSpecifiedTitleClassWindow()
+{
+    // ウインドウのMsgループ用スレッドの終了待ち
+    MsgLoopThread.join();
+}
 

@@ -128,10 +128,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="LogOnDesktop.cpp" />
     <ClCompile Include="WindowJikken.cpp" />
     <ClCompile Include="WindowMessageHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="LogOnDesktop.h" />
     <ClInclude Include="WindowMessageHandler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
