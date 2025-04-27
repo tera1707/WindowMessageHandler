@@ -12,20 +12,13 @@
 // https://stackoverflow.com/questions/14292803/can-i-have-main-window-procedure-as-a-lambda-in-winmain
 // https://akatukisiden.wordpress.com/2016/02/14/c-%E3%81%AB%E3%82%88%E3%82%8B-windows-%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0%E3%81%AE%E5%AD%A6%E7%BF%92-1-6-%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7/
 
-//void log(HWND hwnd, UINT msg)
-//{
-//	wchar_t buf[256];
-//	GetWindowText(hwnd, buf, sizeof(buf)/ sizeof(buf[0]));
-//	auto title = std::wstring(buf);
-//	OutputDebugString((title + L" : " + std::to_wstring(msg) + L"\r\n").c_str());
-//}
-
 LogOnDesktop lod;
 WindowMessageHandler wmh;
 
 int main()
 {
 	std::wcout << L"ウインドウメッセージ実験アプリを開始します。" << std::endl;
+	std::wcout << L"※このConsoleにはログは出ません。デスクトップのmylog.logを見てください。" << std::endl;
 	lod.WriteLine(L"ウインドウメッセージ実験アプリを開始します。");
 
 	// メッセージ受信用見えないウインドウ作成
@@ -35,7 +28,7 @@ int main()
 	wmh.RegisterFunction(WM_APP + 1, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		{
 			//log(hwnd, msg);
-			lod.WriteLine(L"WM_APP + 1");
+			lod.WriteLine(L"WM_APP + 1 -> closeします");
 			wmh.RequestCloseSpecifiedTitleClassWindow();
 		});
 
@@ -43,8 +36,6 @@ int main()
 		{
 			// https://learn.microsoft.com/ja-jp/windows/win32/power/wm-powerbroadcast-messages
 			// https://learn.microsoft.com/ja-jp/windows/win32/power/wm-powerbroadcast
-			//log(hwnd, msg);
-
 			if (wp == PBT_POWERSETTINGCHANGE)
 			{
 				auto pbs = (POWERBROADCAST_SETTING*)lp;
@@ -52,21 +43,21 @@ int main()
 				if (pbs->PowerSetting == GUID_CONSOLE_DISPLAY_STATE)
 				{
 					// ディスプレイON/OFF
-					if (pbs->Data != 0)
-						lod.WriteLine(L"ディスプレイON");
+					if (pbs->Data[0] == 0)
+						lod.WriteLine(L"PBT_POWERSETTINGCHANGE GUID_CONSOLE_DISPLAY_STATE OFF");
 					else 
-						lod.WriteLine(L"ディスプレイOFF");
+						lod.WriteLine(L"PBT_POWERSETTINGCHANGE GUID_CONSOLE_DISPLAY_STATE ON");
 				}
 			}
 			else if (wp == PBT_APMSUSPEND)
 			{
 				// サスペンド(スリープ)
-				lod.WriteLine(L"サスペンド(スリープ)");
+				lod.WriteLine(L"PBT_APMSUSPEND");
 			}
 			else if (wp == PBT_APMRESUMESUSPEND)
 			{
 				// レジューム
-				lod.WriteLine(L"サスペンド");
+				lod.WriteLine(L"PBT_APMRESUMESUSPEND");
 			}
 			else if (wp == PBT_APMRESUMEAUTOMATIC)
 			{
