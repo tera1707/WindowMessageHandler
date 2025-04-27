@@ -110,6 +110,11 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(ProjectDir)DisplayingLogStart.bat $(OutputPath) /q /y
+xcopy $(ProjectDir)DisplayngLogRegister.bat $(OutputPath) /q /y
+xcopy $(ProjectDir)DisplayngLogUnregister.bat $(OutputPath) /q /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -135,6 +140,11 @@
   <ItemGroup>
     <ClInclude Include="LogOnDesktop.h" />
     <ClInclude Include="WindowMessageHandler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DisplayingLogStart.bat" />
+    <None Include="DisplayngLogRegister.bat" />
+    <None Include="DisplayngLogUnregister.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

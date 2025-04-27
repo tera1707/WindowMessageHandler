@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="JikkenFiles">
+      <UniqueIdentifier>{38667e07-f095-4fd2-a5ca-253e807a9e82}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowJikken.cpp">
@@ -32,5 +35,16 @@
     <ClInclude Include="LogOnDesktop.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DisplayingLogStart.bat">
+      <Filter>JikkenFiles</Filter>
+    </None>
+    <None Include="DisplayngLogRegister.bat">
+      <Filter>JikkenFiles</Filter>
+    </None>
+    <None Include="DisplayngLogUnregister.bat">
+      <Filter>JikkenFiles</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -12,26 +12,29 @@
 // https://stackoverflow.com/questions/14292803/can-i-have-main-window-procedure-as-a-lambda-in-winmain
 // https://akatukisiden.wordpress.com/2016/02/14/c-%E3%81%AB%E3%82%88%E3%82%8B-windows-%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0%E3%81%AE%E5%AD%A6%E7%BF%92-1-6-%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7/
 
-void log(HWND hwnd, UINT msg)
-{
-	wchar_t buf[256];
-	GetWindowText(hwnd, buf, sizeof(buf)/ sizeof(buf[0]));
-	auto title = std::wstring(buf);
-	OutputDebugString((title + L" : " + std::to_wstring(msg) + L"\r\n").c_str());
-}
+//void log(HWND hwnd, UINT msg)
+//{
+//	wchar_t buf[256];
+//	GetWindowText(hwnd, buf, sizeof(buf)/ sizeof(buf[0]));
+//	auto title = std::wstring(buf);
+//	OutputDebugString((title + L" : " + std::to_wstring(msg) + L"\r\n").c_str());
+//}
 
 LogOnDesktop lod;
+WindowMessageHandler wmh;
 
 int main()
 {
+	std::wcout << L"ウインドウメッセージ実験アプリを開始します。" << std::endl;
+	lod.WriteLine(L"ウインドウメッセージ実験アプリを開始します。");
+
 	// メッセージ受信用見えないウインドウ作成
-	WindowMessageHandler wmh;
 	wmh.CreateSpecifiedTitleClassWindow(L"MyWindowTitle1", L"MyClassName1");
 
 	// メッセージ受信時イベント登録
-	wmh.RegisterFunction(WM_APP + 1, [&](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+	wmh.RegisterFunction(WM_APP + 1, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		{
-			log(hwnd, msg);
+			//log(hwnd, msg);
 			lod.WriteLine(L"WM_APP + 1");
 			wmh.RequestCloseSpecifiedTitleClassWindow();
 		});
@@ -124,6 +127,9 @@ int main()
 
 	// ウインドウ終了待ち
 	wmh.WaitForCloseSpecifiedTitleClassWindow();
+
+	std::wcout << L"ウインドウを閉じて正常終了しました。" << std::endl;
+	lod.WriteLine(L"ウインドウを閉じて正常終了しました。");
 
 	return 0;
 }
