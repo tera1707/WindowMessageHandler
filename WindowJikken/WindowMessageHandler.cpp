@@ -64,8 +64,10 @@ LRESULT CALLBACK WindowMessageHandler::WndProc(HWND hwnd, UINT uMsg, WPARAM wPar
     case WM_CREATE:
     {
         hPowerNotify = RegisterPowerSettingNotification(hwnd, &GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE);
-        //WTSRegisterSessionNotification(hwnd, NOTIFY_FOR_THIS_SESSION); 
-        WTSRegisterSessionNotification(hwnd, NOTIFY_FOR_ALL_SESSIONS);
+        //WTSRegisterSessionNotification(hwnd, NOTIFY_FOR_THIS_SESSION); // 自分のセッション(ユーザー)のイベントのみ取れればよいならこちら
+        WTSRegisterSessionNotification(hwnd, NOTIFY_FOR_ALL_SESSIONS);   // 自分だけでなく全セッションのイベントを取る場合はこちら
+        RegisterPowerSettingNotification(hwnd, &GUID_POWER_SAVING_STATUS, DEVICE_NOTIFY_WINDOW_HANDLE);
+        RegisterPowerSettingNotification(hwnd, &GUID_ENERGY_SAVER_STATUS, DEVICE_NOTIFY_WINDOW_HANDLE);
         break;
     }
     case WM_DESTROY:
