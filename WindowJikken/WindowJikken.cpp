@@ -15,6 +15,51 @@
 LogOnDesktop lod;
 WindowMessageHandler wmh;
 
+auto dispStateTable = std::map<WPARAM, std::wstring>
+{
+	{ PowerMonitorOff, L"PowerMonitorOff"},
+	{ PowerMonitorOn , L"PowerMonitorOn" },
+	{ PowerMonitorDim , L"PowerMonitorDim" },
+};
+
+auto powerSourceTable = std::map<WPARAM, std::wstring>
+{
+	{ PoAc  , L"PoAc"},
+	{ PoDc  , L"PoDc"},
+	{ PoHot  , L"PoHot" },
+};
+auto userPresenceTable = std::map<WPARAM, std::wstring>
+{
+	{ PowerUserPresent   , L"PowerUserPresent"},
+	{ PowerUserNotPresent   , L"PowerUserNotPresent"},
+	{ PowerUserInactive   , L"PowerUserInactive" },
+};
+auto powerSavingTable = std::map<WPARAM, std::wstring>
+{
+	{ 0    , L"Battery saver is off."},
+	{ 1    , L"Battery saver is on. Save energy where possible."},
+};
+auto energySaverTable = std::map<WPARAM, std::wstring>
+{
+	{ ENERGY_SAVER_OFF    , L"ENERGY_SAVER_OFF"},
+	{ ENERGY_SAVER_STANDARD    , L"ENERGY_SAVER_STANDARD"},
+	{ ENERGY_SAVER_HIGH_SAVINGS    , L"ENERGY_SAVER_HIGH_SAVINGS" },
+};
+
+auto msgTable = std::map<WPARAM, std::wstring>{
+	{ WTS_CONSOLE_CONNECT, L"WTS_CONSOLE_CONNECT"},
+	{ WTS_CONSOLE_DISCONNECT, L"WTS_CONSOLE_DISCONNECT"},
+	{ WTS_REMOTE_CONNECT, L"WTS_REMOTE_CONNECT" },
+	{ WTS_REMOTE_DISCONNECT, L"WTS_REMOTE_DISCONNECT" },
+	{ WTS_SESSION_LOGON, L"WTS_SESSION_LOGON" },
+	{ WTS_SESSION_LOGOFF, L"WTS_SESSION_LOGOFF" },
+	{ WTS_SESSION_LOCK, L"WTS_SESSION_LOCK" },//https://blog.kaorun55.com/entry/20080212/1202829851
+	{ WTS_SESSION_UNLOCK, L"WTS_SESSION_UNLOCK" },
+	{ WTS_SESSION_REMOTE_CONTROL, L"WTS_SESSION_REMOTE_CONTROL" },
+	{ WTS_SESSION_CREATE, L"WTS_SESSION_CREATE" },
+	{ WTS_SESSION_TERMINATE, L"WTS_SESSION_TERMINATE" },
+};
+
 int main()
 {
 	std::wcout << L"ウインドウメッセージ実験アプリを開始します。" << std::endl;
@@ -27,7 +72,6 @@ int main()
 	// メッセージ受信時イベント登録
 	wmh.RegisterFunction(WM_APP + 1, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		{
-			//log(hwnd, msg);
 			lod.WriteLine(L"WM_APP + 1 -> closeします");
 			wmh.RequestCloseSpecifiedTitleClassWindow();
 		});
@@ -39,31 +83,6 @@ int main()
 			if (wp == PBT_POWERSETTINGCHANGE)
 			{
 				auto pbs = (POWERBROADCAST_SETTING*)lp;
-
-				auto dispStateTable = std::map<WPARAM, std::wstring>{
-					{ PowerMonitorOff , L"PowerMonitorOff"},
-					{ PowerMonitorOn , L"PowerMonitorOn"},
-					{ PowerMonitorDim , L"PowerMonitorDim" },
-				};
-				auto powerSourceTable = std::map<WPARAM, std::wstring>{
-					{ PoAc  , L"PoAc"},
-					{ PoDc  , L"PoDc"},
-					{ PoHot  , L"PoHot" },
-				};
-				auto userPresenceTable = std::map<WPARAM, std::wstring>{
-					{ PowerUserPresent   , L"PowerUserPresent"},
-					{ PowerUserNotPresent   , L"PowerUserNotPresent"},
-					{ PowerUserInactive   , L"PowerUserInactive" },
-				};
-				auto powerSavingTable = std::map<WPARAM, std::wstring>{
-					{ 0    , L"Battery saver is off."},
-					{ 1    , L"Battery saver is on. Save energy where possible."},
-				};
-				auto energySaverTable = std::map<WPARAM, std::wstring>{
-					{ ENERGY_SAVER_OFF    , L"ENERGY_SAVER_OFF"},
-					{ ENERGY_SAVER_STANDARD    , L"ENERGY_SAVER_STANDARD"},
-					{ ENERGY_SAVER_HIGH_SAVINGS    , L"ENERGY_SAVER_HIGH_SAVINGS" },
-				};
 
 				if (pbs->PowerSetting == GUID_CONSOLE_DISPLAY_STATE)
 				{
@@ -157,23 +176,7 @@ int main()
 		{
 			//lpはセッションIDが入っている
 			// https://learn.microsoft.com/ja-jp/windows/win32/termserv/wm-wtssession-change
-			auto msgTable = std::map<WPARAM, std::wstring>{
-				{ WTS_CONSOLE_CONNECT, L"WTS_CONSOLE_CONNECT"},
-				{ WTS_CONSOLE_DISCONNECT, L"WTS_CONSOLE_DISCONNECT"},
-				{ WTS_REMOTE_CONNECT, L"WTS_REMOTE_CONNECT" },
-				{ WTS_REMOTE_DISCONNECT, L"WTS_REMOTE_DISCONNECT" },
-				{ WTS_SESSION_LOGON, L"WTS_SESSION_LOGON" },
-				{ WTS_SESSION_LOGOFF, L"WTS_SESSION_LOGOFF" },
-				{ WTS_SESSION_LOCK, L"WTS_SESSION_LOCK" },//https://blog.kaorun55.com/entry/20080212/1202829851
-				{ WTS_SESSION_UNLOCK, L"WTS_SESSION_UNLOCK" },
-				{ WTS_SESSION_REMOTE_CONTROL, L"WTS_SESSION_REMOTE_CONTROL" },
-				{ WTS_SESSION_CREATE, L"WTS_SESSION_CREATE" },
-				{ WTS_SESSION_TERMINATE, L"WTS_SESSION_TERMINATE" },
-			};
-
 			//https://learn.microsoft.com/ja-jp/windows/win32/api/winuser/ns-winuser-wtssession_notification
-			//auto sessionIdInfo = (PWTSSESSION_NOTIFICATION)lp;
-
 			if (msgTable.count(wp) > 0)
 				lod.WriteLine((L"WM_WTSSESSION_CHANGE " + msgTable[wp] + L" セッションNo." + std::to_wstring(lp)).c_str());
 		});
