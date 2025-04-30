@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media;
+﻿using System.Runtime.InteropServices;
 
 namespace WindowJikkenCs.Model;
 
@@ -18,8 +11,8 @@ using HICON = System.IntPtr;
 using HINSTANCE = System.IntPtr;
 using HMENU = System.IntPtr;
 using HWND = System.IntPtr;
-using LRESULT = System.IntPtr;
 using LPARAM = System.IntPtr;
+using LRESULT = System.IntPtr;
 using WPARAM = System.IntPtr;
 
 internal class NativeMethods
@@ -62,12 +55,50 @@ internal class NativeMethods
 
     internal const int WM_CREATE = 0x0001;
     internal const int WM_POWERBROADCAST = 0x0218;
+    internal const int WM_QUERYENDSESSION = 0x0011;
+    internal const int WM_ENDSESSION = 0x0016;
+    internal const int WM_USERCHANGED = 0x0054;
+    internal const int WM_WTSSESSION_CHANGE = 0x02B1;
+
     internal const int PBT_POWERSETTINGCHANGE = 0x8013;
-    internal static Guid GUID_CONSOLE_DISPLAY_STATE = new Guid(0x6fe69556, 0x704a, 0x47a0, 0x8f, 0x24, 0xc2, 0x8d, 0x93, 0x6f, 0xda, 0x47);
+    internal const int PBT_APMSUSPEND = 0x0004;
+    internal const int PBT_APMRESUMESUSPEND = 0x0007;
+    internal const int PBT_APMRESUMEAUTOMATIC = 0x0012;
+    internal const int PBT_APMBATTERYLOW = 0x0009;
+    internal const int PBT_APMPOWERSTATUSCHANGE = 0x000A;
+
     internal const int DEVICE_NOTIFY_WINDOW_HANDLE = 0x00000000;
+    
+    internal static Guid GUID_CONSOLE_DISPLAY_STATE = new Guid(0x6fe69556, 0x704a, 0x47a0, 0x8f, 0x24, 0xc2, 0x8d, 0x93, 0x6f, 0xda, 0x47);
+    internal static Guid GUID_POWER_SAVING_STATUS = new Guid(0xe00958c0, 0xc213, 0x4ace, 0xac, 0x77, 0xfe, 0xcc, 0xed, 0x2e, 0xee, 0xa5);
+    internal static Guid GUID_ENERGY_SAVER_STATUS = new Guid(0x550e8400, 0xe29b, 0x41d4, 0xa7, 0x16, 0x44, 0x66, 0x55, 0x44, 0x00, 0x00);
+    internal static Guid GUID_SESSION_DISPLAY_STATUS = new Guid(0x2b84c20e, 0xad23, 0x4ddf, 0x93, 0xdb, 0x5, 0xff, 0xbd, 0x7e, 0xfc, 0xa5);
+    internal static Guid GUID_BATTERY_PERCENTAGE_REMAINING = new Guid(0xA7AD8041, 0xB45A, 0x4CAE, 0x87, 0xA3, 0xEE, 0xCB, 0xB4, 0x68, 0xA9, 0xE1);
+    internal static Guid GUID_ACDC_POWER_SOURCE = new Guid(0x5D3E9A59, 0xE9D5, 0x4B00, 0xA6, 0xBD, 0xFF, 0x34, 0xFF, 0x51, 0x65, 0x48);
+    internal static Guid GUID_GLOBAL_USER_PRESENCE = new Guid(0x786e8a1d, 0xb427, 0x4344, 0x92, 0x7, 0x9, 0xe7, 0xb, 0xdc, 0xbe, 0xa9);
+    internal static Guid GUID_LIDSWITCH_STATE_CHANGE = new Guid(0xBA3E0F4D, 0xB817, 0x4094, 0xA2, 0xD1, 0xD5, 0x63, 0x79, 0xE6, 0xA0, 0xF3);
+    internal static Guid GUID_MONITOR_POWER_ON = new Guid(0x02731015, 0x4510, 0x4526, 0x99, 0xE6, 0xE5, 0xA1, 0x7E, 0xBD, 0x1A, 0xEA);
+    internal static Guid GUID_POWERSCHEME_PERSONALITY = new Guid(0x245D8541, 0x3943, 0x4422, 0xB0, 0x25, 0x13, 0xA7, 0x84, 0xF6, 0x79, 0xB7);
+    internal static Guid GUID_MIN_POWER_SAVINGS = new Guid(0x8C5E7FDA, 0xE8BF, 0x4A96, 0x9A, 0x85, 0xA6, 0xE2, 0x3A, 0x8C, 0x63, 0x5C);
+    internal static Guid GUID_MAX_POWER_SAVINGS = new Guid(0xA1841308, 0x3541, 0x4FAB, 0xBC, 0x81, 0xF7, 0x15, 0x56, 0xF2, 0x0B, 0x4A);
+    internal static Guid GUID_TYPICAL_POWER_SAVINGS = new Guid(0x381B4222, 0xF694, 0x41F0, 0x96, 0x85, 0xFF, 0x5B, 0xB2, 0x60, 0xDF, 0x2E);
+
+    internal const uint WTS_CONSOLE_CONNECT = 0x01;
+    internal const uint WTS_CONSOLE_DISCONNECT = 0x02;
+    internal const uint WTS_REMOTE_CONNECT = 0x03;
+    internal const uint WTS_REMOTE_DISCONNECT = 0x04;
+    internal const uint WTS_SESSION_LOGON = 0x05;
+    internal const uint WTS_SESSION_LOGOFF = 0x06;
+    internal const uint WTS_SESSION_LOCK = 0x07;
+    internal const uint WTS_SESSION_UNLOCK = 0x08;
+    internal const uint WTS_SESSION_REMOTE_CONTROL = 0x09;
+    internal const uint WTS_SESSION_CREATE = 0x0a;
+    internal const uint WTS_SESSION_TERMINATE = 0x0b;
+
+    internal const int NOTIFY_FOR_THIS_SESSION = 0x00;
+    internal const int NOTIFY_FOR_ALL_SESSIONS = 0x01;
 
     internal static readonly IntPtr NULL = IntPtr.Zero;
-
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     internal struct POWERBROADCAST_SETTING
@@ -77,27 +108,8 @@ internal class NativeMethods
         public byte Data;
     }
 
-    // 関数ポインタをそれっぽくするためのラッパー
-    public struct WNDPROC<TDelegate>
-    {
-        private readonly IntPtr ptr;
+    public delegate IntPtr WindowProcedure(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
-        public WNDPROC(IntPtr ptr)
-        {
-            this.ptr = ptr;
-        }
-
-        public static explicit operator WNDPROC<TDelegate>(TDelegate @delegate)
-            => new(Marshal.GetFunctionPointerForDelegate(@delegate));
-
-        public static implicit operator IntPtr(WNDPROC<TDelegate> wndproc)
-            => wndproc.ptr;
-    }
-
-    public delegate IntPtr WindowProcedure(HWND hWnd, uint msg, IntPtr wParam, IntPtr lParam);
-
-    //var NULL = IntPtr.Zero;
-    // ウィンドウクラス登録時に情報を突っ込む
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public struct WNDCLASSEX
     {
@@ -105,7 +117,7 @@ internal class NativeMethods
         public int cbSize;
         [MarshalAs(UnmanagedType.U4)]
         public int style;
-        public WNDPROC<WindowProcedure> lpfnWndProc;
+        public WindowProcedure lpfnWndProc;
         public int cbClsExtra;
         public int cbWndExtra;
         public HINSTANCE hInstance;
@@ -151,6 +163,7 @@ internal class NativeMethods
             return new POINT(p.X, p.Y);
         }
     }
+
     [DllImport(@"User32.dll", SetLastError = true, EntryPoint = "RegisterPowerSettingNotification", CallingConvention = CallingConvention.StdCall)]
     internal static extern IntPtr RegisterPowerSettingNotification(IntPtr hRecipient, ref Guid PowerSettingGuid, uint Flags);
 
@@ -163,14 +176,10 @@ internal class NativeMethods
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     [return: MarshalAs(UnmanagedType.U2)]
-    internal static extern ATOM RegisterClassEx(
-       [In] ref WNDCLASSEX lpwcx
-    );
+    internal static extern ATOM RegisterClassEx([In] ref WNDCLASSEX lpwcx);
 
     [DllImport("gdi32.dll")]
-    internal static extern HBRUSH GetStockObject(
-       int fnObject
-    );
+    internal static extern HBRUSH GetStockObject(int fnObject);
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     internal static extern HICON LoadImage(
@@ -207,15 +216,10 @@ internal class NativeMethods
     );
 
     [DllImport("user32.dll")]
-    internal static extern bool ShowWindow(
-       HWND hWnd,
-       int nCmdShow
-    );
+    internal static extern bool ShowWindow(HWND hWnd, int nCmdShow);
 
     [DllImport("user32.dll")]
-    internal static extern bool UpdateWindow(
-       HWND hWnd
-    );
+    internal static extern bool UpdateWindow(HWND hWnd);
 
     [DllImport("user32.dll")]
     internal static extern int GetMessage(
@@ -226,17 +230,17 @@ internal class NativeMethods
     );
 
     [DllImport("user32.dll")]
-    internal static extern bool TranslateMessage(
-       [In] ref MSG lpMsg
-    );
+    internal static extern bool TranslateMessage([In] ref MSG lpMsg);
 
     [DllImport("user32.dll")]
-    internal static extern IntPtr DispatchMessage(
-       [In] ref MSG lpmsg
-    );
+    internal static extern IntPtr DispatchMessage([In] ref MSG lpmsg);
 
     [DllImport("user32.dll")]
-    internal static extern void PostQuitMessage(
-       int nExitCode
-    );
+    internal static extern void PostQuitMessage(int nExitCode);
+
+    [DllImport("wtsapi32.dll", SetLastError = true)]
+    internal static extern bool WTSRegisterSessionNotification(IntPtr hWnd, [MarshalAs(UnmanagedType.U4)] int dwFlags);
+
+    [DllImport("wtsapi32.dll", SetLastError = true)]
+    internal static extern bool WTSUnRegisterSessionNotification(IntPtr hWnd);
 }

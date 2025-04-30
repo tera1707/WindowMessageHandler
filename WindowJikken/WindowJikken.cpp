@@ -152,6 +152,16 @@ int main()
 				// レジューム(Automatic？)
 				lod.WriteLine(L"PBT_APMRESUMEAUTOMATIC");
 			}
+			else if (wp == PBT_APMBATTERYLOW)
+			{
+				// レジューム(Automatic？)
+				lod.WriteLine(L"PBT_APMBATTERYLOW");
+			}
+			else if (wp == PBT_APMPOWERSTATUSCHANGE)
+			{
+				// レジューム(Automatic？)
+				lod.WriteLine(L"PBT_APMPOWERSTATUSCHANGE");
+			}
 		});
 
 	wmh.RegisterFunction(WM_QUERYENDSESSION, [](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)

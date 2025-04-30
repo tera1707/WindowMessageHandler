@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
+
 using static WindowJikkenCs.Model.NativeMethods;
 
 using ATOM = System.UInt16;
 using BOOL = System.Int32;
-using DWORD = System.UInt32;
-using HBRUSH = System.IntPtr;
-using HCURSOR = System.IntPtr;
-using HICON = System.IntPtr;
 using HINSTANCE = System.IntPtr;
-using HMENU = System.IntPtr;
 using HWND = System.IntPtr;
-using LRESULT = System.IntPtr;
 using LPARAM = System.IntPtr;
+using LRESULT = System.IntPtr;
 using WPARAM = System.IntPtr;
 
 namespace WindowJikkenCs.Model;
@@ -26,7 +16,6 @@ internal class WindowMessageHandlerCs
 {
     string szAppName = "MyWindowClassName";
     string szWindowTitle = "MyWindowTitle";
-    internal IntPtr registerConsoleDisplayHandle = IntPtr.Zero;
 
     public WindowMessageHandlerCs()
     {
@@ -66,7 +55,7 @@ internal class WindowMessageHandlerCs
         {
             cbSize = Marshal.SizeOf(typeof(WNDCLASSEX)),
             style = CS_VREDRAW | CS_HREDRAW,
-            lpfnWndProc = (WNDPROC<WindowProcedure>)WndProc,
+            lpfnWndProc = WndProc,
             cbClsExtra = 0,
             cbWndExtra = 0,
             hInstance = hInst,
@@ -114,8 +103,12 @@ internal class WindowMessageHandlerCs
         _actinDic.Add(msg, actinDic);
     }
 
+    internal IntPtr registerConsoleDisplayHandle = IntPtr.Zero;
+    internal IntPtr registerPowerSavingHandle = IntPtr.Zero;
+    internal IntPtr registerEnergySaverHandle = IntPtr.Zero;
+
     // コールバック
-    private LRESULT WndProc(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam)
+    private LRESULT WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
     {
         if (_actinDic.TryGetValue(msg, out var action))
             action.Invoke(hWnd, msg, wParam, lParam);
@@ -123,9 +116,15 @@ internal class WindowMessageHandlerCs
         switch (msg)
         {
             case WM_CREATE:
+                WTSRegisterSessionNotification(hWnd, NOTIFY_FOR_ALL_SESSIONS);
                 registerConsoleDisplayHandle = RegisterPowerSettingNotification(hWnd, ref GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE);
+                registerPowerSavingHandle = RegisterPowerSettingNotification(hWnd, ref GUID_POWER_SAVING_STATUS, DEVICE_NOTIFY_WINDOW_HANDLE);
+                registerEnergySaverHandle = RegisterPowerSettingNotification(hWnd, ref GUID_ENERGY_SAVER_STATUS, DEVICE_NOTIFY_WINDOW_HANDLE);
                 break;
             case WM_DESTROY:
+                UnregisterPowerSettingNotification(registerConsoleDisplayHandle);
+                UnregisterPowerSettingNotification(registerPowerSavingHandle);
+                UnregisterPowerSettingNotification(registerEnergySaverHandle);
                 PostQuitMessage(0);
                 break;
             default:
