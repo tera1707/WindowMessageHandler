@@ -66,6 +66,7 @@ internal class NativeMethods
     internal static Guid GUID_CONSOLE_DISPLAY_STATE = new Guid(0x6fe69556, 0x704a, 0x47a0, 0x8f, 0x24, 0xc2, 0x8d, 0x93, 0x6f, 0xda, 0x47);
     internal const int DEVICE_NOTIFY_WINDOW_HANDLE = 0x00000000;
 
+    internal static readonly IntPtr NULL = IntPtr.Zero;
 
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
