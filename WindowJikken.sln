@@ -5,13 +5,21 @@ VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowJikken", "WindowJikken\WindowJikken.vcxproj", "{D0A23D3D-9BD7-43B3-973D-C741C80F5891}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowJikkenCs", "WindowJikkenCs\WindowJikkenCs.csproj", "{8343309A-5483-4B13-AAE4-E0E2B36EDDAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D0A23D3D-9BD7-43B3-973D-C741C80F5891}.Debug|x64.ActiveCfg = Debug|x64
 		{D0A23D3D-9BD7-43B3-973D-C741C80F5891}.Debug|x64.Build.0 = Debug|x64
+		{D0A23D3D-9BD7-43B3-973D-C741C80F5891}.Release|x64.ActiveCfg = Release|x64
+		{D0A23D3D-9BD7-43B3-973D-C741C80F5891}.Release|x64.Build.0 = Release|x64
+		{8343309A-5483-4B13-AAE4-E0E2B36EDDAD}.Debug|x64.ActiveCfg = Debug|x64
+		{8343309A-5483-4B13-AAE4-E0E2B36EDDAD}.Debug|x64.Build.0 = Debug|x64
+		{8343309A-5483-4B13-AAE4-E0E2B36EDDAD}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
