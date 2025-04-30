@@ -14,23 +14,24 @@ namespace WindowJikkenCs.Model;
 
 internal class WindowMessageHandlerCs
 {
-    string szAppName = "MyWindowClassName";
-    string szWindowTitle = "MyWindowTitle";
+    private string szAppName = "MyWindowClassName";
+    private string szWindowTitle = "MyWindowTitle";
 
-    public WindowMessageHandlerCs()
-    {
-
-    }
+    private IntPtr registerConsoleDisplayHandle = IntPtr.Zero;
+    private IntPtr registerPowerSavingHandle = IntPtr.Zero;
+    private IntPtr registerEnergySaverHandle = IntPtr.Zero;
 
     public void CreateSpecifiedTitleClassWindow()
     {
         MSG msg;
         int bRet;
 
-        var hCurInst = GetModuleHandle(null);
+        var hCurInst = GetModuleHandle(string.Empty);
 
-        if (InitApp(hCurInst) == 0)
+        if (RegisterWindowClass(hCurInst) == 0)
             return;
+
+        // SW_HIDEにして、見えないウインドウにする
         if (InitInstance(hCurInst, SW_HIDE) == 0)
             return;
 
@@ -49,7 +50,7 @@ internal class WindowMessageHandlerCs
     }
 
     // ウィンドウクラス登録
-    ATOM InitApp(HINSTANCE hInst)
+    ATOM RegisterWindowClass(HINSTANCE hInst)
     {
         var wcx = new WNDCLASSEX()
         {
@@ -103,10 +104,6 @@ internal class WindowMessageHandlerCs
         _actinDic.Add(msg, actinDic);
     }
 
-    internal IntPtr registerConsoleDisplayHandle = IntPtr.Zero;
-    internal IntPtr registerPowerSavingHandle = IntPtr.Zero;
-    internal IntPtr registerEnergySaverHandle = IntPtr.Zero;
-
     // コールバック
     private LRESULT WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
     {
@@ -125,6 +122,7 @@ internal class WindowMessageHandlerCs
                 UnregisterPowerSettingNotification(registerConsoleDisplayHandle);
                 UnregisterPowerSettingNotification(registerPowerSavingHandle);
                 UnregisterPowerSettingNotification(registerEnergySaverHandle);
+
                 PostQuitMessage(0);
                 break;
             default:
