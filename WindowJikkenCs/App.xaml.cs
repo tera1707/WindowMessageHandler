@@ -1,8 +1,4 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Windows;
 using WindowJikkenCs.Model;

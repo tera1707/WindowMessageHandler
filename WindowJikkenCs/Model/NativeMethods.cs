@@ -2,29 +2,16 @@
 
 namespace WindowJikkenCs.Model;
 
-using ATOM = System.UInt16;
-using BOOL = System.Int32;
-using DWORD = System.UInt32;
-using HBRUSH = System.IntPtr;
-using HCURSOR = System.IntPtr;
-using HICON = System.IntPtr;
-using HINSTANCE = System.IntPtr;
-using HMENU = System.IntPtr;
-using HWND = System.IntPtr;
-using LPARAM = System.IntPtr;
-using LRESULT = System.IntPtr;
-using WPARAM = System.IntPtr;
-
 internal class NativeMethods
 {
-    internal const BOOL FALSE = 0;
-    internal const BOOL TRUE = 1;
+    internal const Int32 FALSE = 0;
+    internal const Int32 TRUE = 1;
 
     // Window Class Styles
     internal const int CS_VREDRAW = 0x0001;
     internal const int CS_HREDRAW = 0x0002;
 
-    // LoadImageのパラメータ
+    // LoadImage
     internal const int LR_DEFAULTSIZE = 0x00000040;
     internal const int LR_SHARED = 0x00008000;
     internal const int IMAGE_ICON = 1;
@@ -37,7 +24,6 @@ internal class NativeMethods
     internal const uint WS_EX_CLIENTEDGE = 0x00000200;
     internal const uint WS_EX_OVERLAPPEDWINDOW = WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE;
 
-    // 拡張じゃないウィンドウスタイル
     internal const uint WS_OVERLAPPED = 0x00000000;
     internal const uint WS_MAXIMIZEBOX = 0x00010000;
     internal const uint WS_MINIMIZEBOX = 0x00020000;
@@ -120,25 +106,25 @@ internal class NativeMethods
         public WindowProcedure lpfnWndProc;
         public int cbClsExtra;
         public int cbWndExtra;
-        public HINSTANCE hInstance;
-        public HICON hIcon;
-        public HCURSOR hCursor;
-        public HBRUSH hbrBackground;
+        public IntPtr hInstance;
+        public IntPtr hIcon;
+        public IntPtr hCursor;
+        public IntPtr hbrBackground;
         public string lpszMenuName;
         public string lpszClassName;
-        public HICON hIconSm;
+        public IntPtr hIconSm;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct MSG
     {
-        public HWND hwnd;
+        public IntPtr hwnd;
         public uint message;
-        public WPARAM wParam;
-        public LPARAM lParam;
-        public DWORD time;
+        public IntPtr wParam;
+        public IntPtr lParam;
+        public UInt32 time;
         public POINT pt;
-        public DWORD lPrivate;
+        public UInt32 lPrivate;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -168,39 +154,27 @@ internal class NativeMethods
     internal static extern IntPtr RegisterPowerSettingNotification(IntPtr hRecipient, ref Guid PowerSettingGuid, uint Flags);
 
     [DllImport(@"User32.dll", EntryPoint = "UnregisterPowerSettingNotification", CallingConvention = CallingConvention.StdCall)]
-    internal static extern bool UnregisterPowerSettingNotification(IntPtr RegistrationHandle);
+    internal static extern Int32 UnregisterPowerSettingNotification(IntPtr RegistrationHandle);
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    internal static extern HINSTANCE GetModuleHandle(
+    internal static extern IntPtr GetModuleHandle(
     [MarshalAs(UnmanagedType.LPWStr)] in string lpModuleName);
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     [return: MarshalAs(UnmanagedType.U2)]
-    internal static extern ATOM RegisterClassEx([In] ref WNDCLASSEX lpwcx);
+    internal static extern UInt16 RegisterClassEx([In] ref WNDCLASSEX lpwcx);
 
     [DllImport("gdi32.dll")]
-    internal static extern HBRUSH GetStockObject(int fnObject);
+    internal static extern IntPtr GetStockObject(int fnObject);
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    internal static extern HICON LoadImage(
-       HINSTANCE hinst,
-       string lpszName,
-       uint uType,
-       int cxDesired,
-       int cyDesired,
-       uint fuLoad
-    );
+    internal static extern IntPtr LoadImage(IntPtr hinst, string lpszName, uint uType,　int cxDesired, int cyDesired, uint fuLoad);
 
     [DllImport("user32.dll")]
-    internal static extern LRESULT DefWindowProc(
-       HWND hWnd,
-       uint uMsg,
-       WPARAM wParam,
-       LPARAM lParam
-    );
+    internal static extern IntPtr DefWindowProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
 
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-    internal static extern HWND CreateWindowEx(
+    internal static extern IntPtr CreateWindowEx(
         uint dwExStyle,
         string lpClassName,
         [MarshalAs(UnmanagedType.LPStr)] string lpWindowName,
@@ -209,28 +183,23 @@ internal class NativeMethods
         int y,
         int nWidth,
         int nHeight,
-        HWND hWndParent,
-        HMENU hMenu,
-        HINSTANCE hInstance,
+        IntPtr hWndParent,
+        IntPtr hMenu,
+        IntPtr hInstance,
         IntPtr lpParam
     );
 
     [DllImport("user32.dll")]
-    internal static extern bool ShowWindow(HWND hWnd, int nCmdShow);
+    internal static extern Int32 ShowWindow(IntPtr hWnd, int nCmdShow);
 
     [DllImport("user32.dll")]
-    internal static extern bool UpdateWindow(HWND hWnd);
+    internal static extern Int32 UpdateWindow(IntPtr hWnd);
 
     [DllImport("user32.dll")]
-    internal static extern int GetMessage(
-       out MSG lpMsg,
-       HWND hWnd,
-       uint wMsgFilterMin,
-       uint wMsgFilterMax
-    );
+    internal static extern int GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
     [DllImport("user32.dll")]
-    internal static extern bool TranslateMessage([In] ref MSG lpMsg);
+    internal static extern Int32 TranslateMessage([In] ref MSG lpMsg);
 
     [DllImport("user32.dll")]
     internal static extern IntPtr DispatchMessage([In] ref MSG lpmsg);
@@ -239,8 +208,8 @@ internal class NativeMethods
     internal static extern void PostQuitMessage(int nExitCode);
 
     [DllImport("wtsapi32.dll", SetLastError = true)]
-    internal static extern bool WTSRegisterSessionNotification(IntPtr hWnd, [MarshalAs(UnmanagedType.U4)] int dwFlags);
+    internal static extern Int32 WTSRegisterSessionNotification(IntPtr hWnd, [MarshalAs(UnmanagedType.U4)] int dwFlags);
 
     [DllImport("wtsapi32.dll", SetLastError = true)]
-    internal static extern bool WTSUnRegisterSessionNotification(IntPtr hWnd);
+    internal static extern Int32 WTSUnRegisterSessionNotification(IntPtr hWnd);
 }

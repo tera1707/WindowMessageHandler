@@ -2,14 +2,6 @@
 
 using static WindowJikkenCs.Model.NativeMethods;
 
-using ATOM = System.UInt16;
-using BOOL = System.Int32;
-using HINSTANCE = System.IntPtr;
-using HWND = System.IntPtr;
-using LPARAM = System.IntPtr;
-using LRESULT = System.IntPtr;
-using WPARAM = System.IntPtr;
-
 namespace WindowJikkenCs.Model;
 
 internal class WindowMessageHandlerCs
@@ -21,12 +13,15 @@ internal class WindowMessageHandlerCs
     private IntPtr registerPowerSavingHandle = IntPtr.Zero;
     private IntPtr registerEnergySaverHandle = IntPtr.Zero;
 
+    // ウインドウメッセージ毎に、呼び出すメソッドを登録しておくDictionary
+    private Dictionary<uint, Action<IntPtr, uint, IntPtr, IntPtr>> _actinDic = new();
+
     public void CreateSpecifiedTitleClassWindow()
     {
         MSG msg;
         int bRet;
 
-        var hCurInst = GetModuleHandle(string.Empty);
+        var hCurInst = (UInt16)GetModuleHandle(string.Empty);
 
         if (RegisterWindowClass(hCurInst) == 0)
             return;
@@ -50,7 +45,7 @@ internal class WindowMessageHandlerCs
     }
 
     // ウィンドウクラス登録
-    ATOM RegisterWindowClass(HINSTANCE hInst)
+    UInt16 RegisterWindowClass(UInt16 hInst)
     {
         var wcx = new WNDCLASSEX()
         {
@@ -72,7 +67,7 @@ internal class WindowMessageHandlerCs
     }
 
     // インスタンス作成
-    BOOL InitInstance(HINSTANCE hInst, int nCmdShow)
+    System.Int32 InitInstance(IntPtr hInst, int nCmdShow)
     {
         var hWnd = CreateWindowEx(
             WS_EX_OVERLAPPEDWINDOW,
@@ -97,15 +92,13 @@ internal class WindowMessageHandlerCs
         return TRUE;
     }
 
-    private Dictionary<uint, Action<HWND, uint, WPARAM, LPARAM>> _actinDic = new();
-
-    public void RegisterFunction(uint msg, Action<HWND, uint, WPARAM, LPARAM> actinDic)
+    public void RegisterFunction(uint msg, Action<IntPtr, uint, IntPtr, IntPtr> actinDic)
     {
         _actinDic.Add(msg, actinDic);
     }
 
     // コールバック
-    private LRESULT WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
+    private IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
     {
         if (_actinDic.TryGetValue(msg, out var action))
             action.Invoke(hWnd, msg, wParam, lParam);
