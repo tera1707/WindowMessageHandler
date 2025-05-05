@@ -9,8 +9,9 @@ private:
     std::mutex mtx;
     std::filesystem::path AppendLogFilePathOnDesktopString(std::wstring filename);
     std::wstring GetTimeString();
+    std::wstring TargetFileNameWithExt;
 
 public:
-    LogOnDesktop();
+    LogOnDesktop(const std::wstring fileNameWithExt);
     void WriteLine(std::wstring txt);
 };

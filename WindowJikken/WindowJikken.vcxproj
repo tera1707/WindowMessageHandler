@@ -79,11 +79,13 @@ xcopy $(ProjectDir)DisplayngLogUnregister.bat $(OutputPath) /q /y</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="LogOnDesktop.cpp" />
+    <ClCompile Include="WindowEventHandler.cpp" />
     <ClCompile Include="WindowJikken.cpp" />
     <ClCompile Include="WindowMessageHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LogOnDesktop.h" />
+    <ClInclude Include="WindowEventHandler.h" />
     <ClInclude Include="WindowMessageHandler.h" />
   </ItemGroup>
   <ItemGroup>

@@ -15,9 +15,10 @@
 // ※このコードをブラウザからコピーしてVisualStudioに貼り付けると、ビルドしたときに
 // 　文字コード云々でエラーになったことがあった。そういうときは、コード中のコメントを全部消すとエラー消えた。
 
-LogOnDesktop::LogOnDesktop()
+LogOnDesktop::LogOnDesktop(std::wstring fileNameWithExt)
 {
     _wsetlocale(LC_ALL, L"japanese");
+    TargetFileNameWithExt = fileNameWithExt;
 }
 
 std::filesystem::path LogOnDesktop::AppendLogFilePathOnDesktopString(std::wstring filename)
@@ -54,7 +55,7 @@ void LogOnDesktop::WriteLine(std::wstring txt)
 {
     std::lock_guard<std::mutex> lock(mtx);
 
-    auto desktop = AppendLogFilePathOnDesktopString(L"mylog.log");
+    auto desktop = AppendLogFilePathOnDesktopString(TargetFileNameWithExt);
 
     DWORD processId = GetCurrentProcessId();
 
