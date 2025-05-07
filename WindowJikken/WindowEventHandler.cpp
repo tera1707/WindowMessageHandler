@@ -31,7 +31,7 @@ void WindowEventHandler::WaitForEvent()
 			// https://learn.microsoft.com/ja-jp/windows/win32/power/wm-powerbroadcast
 			if (wp == PBT_POWERSETTINGCHANGE)
 			{
-				auto pbs = (POWERBROADCAST_SETTING*)lp;
+				auto pbs = ((PPOWERBROADCAST_SETTING)lp);
 
 				if (pbs->PowerSetting == GUID_CONSOLE_DISPLAY_STATE)
 				{
@@ -53,9 +53,9 @@ void WindowEventHandler::WaitForEvent()
 				{
 					lod.WriteLine(std::format(L"PBT_POWERSETTINGCHANGE GUID_ACDC_POWER_SOURCE {0}", powerSourceTable[pbs->Data[0]]));
 				}
-				else if (pbs->PowerSetting == GUID_GLOBAL_USER_PRESENCE)
+				else if (pbs->PowerSetting == GUID_SESSION_USER_PRESENCE)
 				{
-					lod.WriteLine(std::format(L"PBT_POWERSETTINGCHANGE GUID_GLOBAL_USER_PRESENCE {0}", userPresenceTable[pbs->Data[0]]));
+					lod.WriteLine(std::format(L"PBT_POWERSETTINGCHANGE GUID_SESSION_USER_PRESENCE  {0}", userPresenceTable[pbs->Data[0]]));
 				}
 				else if (pbs->PowerSetting == GUID_LIDSWITCH_STATE_CHANGE)
 				{
@@ -76,18 +76,6 @@ void WindowEventHandler::WaitForEvent()
 				else if (pbs->PowerSetting == GUID_POWERSCHEME_PERSONALITY)
 				{
 					lod.WriteLine(std::format(L"PBT_POWERSETTINGCHANGE GUID_POWERSCHEME_PERSONALITY {0}", pbs->Data[0]));
-				}
-				else if (pbs->PowerSetting == GUID_MIN_POWER_SAVINGS)
-				{
-					lod.WriteLine(std::format(L"PBT_POWERSETTINGCHANGE GUID_MIN_POWER_SAVINGS {0}", pbs->Data[0]));
-				}
-				else if (pbs->PowerSetting == GUID_MAX_POWER_SAVINGS)
-				{
-					lod.WriteLine(std::format(L"PBT_POWERSETTINGCHANGE GUID_MAX_POWER_SAVINGS {0}", pbs->Data[0]));
-				}
-				else if (pbs->PowerSetting == GUID_TYPICAL_POWER_SAVINGS)
-				{
-					lod.WriteLine(std::format(L"PBT_POWERSETTINGCHANGE GUID_TYPICAL_POWER_SAVINGS {0}", pbs->Data[0]));
 				}
 			}
 			else if (wp == PBT_APMSUSPEND)
