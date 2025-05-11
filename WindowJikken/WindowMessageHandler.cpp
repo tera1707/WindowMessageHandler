@@ -2,6 +2,9 @@
 #include "WindowMessageHandler.h"
 #include <iostream>
 #include <wtsapi32.h>
+#include <Dbt.h>
+#include <initguid.h>
+#include <Usbiodef.h>
 
 //WTSRegisterSessionNotification を使うために必要
 #pragma comment(lib, "Wtsapi32.lib")
@@ -53,6 +56,35 @@ LRESULT CALLBACK WindowMessageHandler::WndProcForGetThisPtr(HWND hwnd, UINT uMsg
 
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
+HDEVNOTIFY hDeviceNotify;
+int ctr = 0;
+
+void WindowMessageHandler::aaa(HWND hwnd, DWORD guid)
+{
+    // This GUID is for all USB serial host PnP drivers, but you can replace it 
+    // with any valid device class guid.
+    GUID WceusbshGUID = { 0x25dbce51, 0x6c8f, 0x4a72,
+                  0x8a,0x6d,0xb5,0x4c,0x2b,0x4f,0xc8,0x35 };
+    DEV_BROADCAST_DEVICEINTERFACE NotificationFilter;
+
+    ZeroMemory(&NotificationFilter, sizeof(NotificationFilter));
+    NotificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
+    NotificationFilter.dbcc_devicetype = guid;
+    NotificationFilter.dbcc_classguid = WceusbshGUID;//
+    //NotificationFilter.dbcc_classguid = GUID_DEVINTERFACE_USB_DEVICE;//
+    //NotificationFilter.dbcc_classguid = GUID_DEVINTERFACE_USB_HUB;//
+    // ↓これを「DEVICE_NOTIFY_ALL_INTERFACE_CLASSES」つきで呼ぶと、USBキーボードの抜きさしでDBT_DEVICEARRIVALが来るようになる。DEVICE_NOTIFY_ALL_INTERFACE_CLASSESなしで呼んでもARRIVALよばないと来ない。
+    // これをよばなくても、DBT_DEVNODES_CHANGEDは来る
+    //hDeviceNotify = RegisterDeviceNotification(hwnd, &NotificationFilter, DEVICE_NOTIFY_WINDOW_HANDLE | DEVICE_NOTIFY_ALL_INTERFACE_CLASSES);
+    hDeviceNotify = RegisterDeviceNotification(hwnd, &NotificationFilter, DEVICE_NOTIFY_WINDOW_HANDLE | DEVICE_NOTIFY_ALL_INTERFACE_CLASSES);
+
+    if (NULL == hDeviceNotify)
+    {
+        ctr++;
+        OutputDebugString(L"aaaa");
+        return;
+    }
+}
 
 /// <summary>
 /// ウインドウプロシージャ―
@@ -68,6 +100,15 @@ LRESULT CALLBACK WindowMessageHandler::WndProc(HWND hwnd, UINT uMsg, WPARAM wPar
         WTSRegisterSessionNotification(hwnd, NOTIFY_FOR_ALL_SESSIONS);   // 自分だけでなく全セッションのイベントを取る場合はこちら
         RegisterPowerSettingNotification(hwnd, &GUID_POWER_SAVING_STATUS, DEVICE_NOTIFY_WINDOW_HANDLE);
         RegisterPowerSettingNotification(hwnd, &GUID_ENERGY_SAVER_STATUS, DEVICE_NOTIFY_WINDOW_HANDLE);
+
+        //aaa(hwnd, DBT_DEVTYP_DEVNODE);//この5つはエラーになる
+        //aaa(hwnd, DBT_DEVTYP_OEM);
+        //aaa(hwnd, DBT_DEVTYP_VOLUME);
+        //aaa(hwnd, DBT_DEVTYP_PORT);
+        //aaa(hwnd, DBT_DEVTYP_NET);
+        //aaa(hwnd, DBT_DEVTYP_HANDLE);
+        aaa(hwnd, DBT_DEVTYP_DEVICEINTERFACE);
+        printf("%d", ctr);
         break;
     }
     case WM_DESTROY:

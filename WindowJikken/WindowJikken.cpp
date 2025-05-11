@@ -20,15 +20,16 @@ int main()
 	lod.WriteLine(L"ウインドウメッセージ実験アプリを開始します。");
 	std::wcout << L"※このConsoleにはログは出ません。デスクトップのmylog.logを見てください。" << std::endl;
 
-	weh.RegisterOnBatteryRemainChanged([&](int battRemain)
-		{
-			lod.WriteLine(std::format(L"バッテリー残量：{0} %", battRemain));
-		});
+	// ↓こういうイメージでイベントを見れるようにする
+	//weh.RegisterOnBatteryRemainChanged([&](int battRemain)
+	//	{
+	//		lod.WriteLine(std::format(L"バッテリー残量：{0} %", battRemain));
+	//	});
 
-	weh.RegisterOnLockChanged([&](LockStatus lockState)
-		{
-			lod.WriteLine(std::format(L"ロック状態：{0}", lockState == LockStatus::Locked ? L"Locked" : L"Unlocked"));
-		});
+	//weh.RegisterOnLockChanged([&](LockStatus lockState)
+	//	{
+	//		lod.WriteLine(std::format(L"ロック状態：{0}", lockState == LockStatus::Locked ? L"Locked" : L"Unlocked"));
+	//	});
 
 	weh.WaitForEvent();
 

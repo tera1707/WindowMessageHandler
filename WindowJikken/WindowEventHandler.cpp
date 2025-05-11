@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <string>
+#include <Dbt.h>
 #include "WindowEventHandler.h"
 #include "LogOnDesktop.h"
 
@@ -11,6 +12,48 @@ WindowEventHandler::WindowEventHandler()
 WindowEventHandler::~WindowEventHandler()
 {
 
+}
+
+void AnalyzeDeviceType(LPARAM lp)
+{
+	DEV_BROADCAST_HDR* pHdr = reinterpret_cast<DEV_BROADCAST_HDR*>(lp);
+	if (pHdr)
+	{
+		switch (pHdr->dbch_devicetype)
+		{
+		case DBT_DEVTYP_DEVICEINTERFACE:
+		{
+			DEV_BROADCAST_DEVICEINTERFACE* pDevInterface = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE*>(pHdr);
+			lod.WriteLine(std::format(L"DBT_DEVICEARRIVAL: Device Interface Name: {}", pDevInterface->dbcc_name));
+			break;
+		}
+		case DBT_DEVTYP_VOLUME:
+		{
+			DEV_BROADCAST_VOLUME* pVolume = reinterpret_cast<DEV_BROADCAST_VOLUME*>(pHdr);
+			lod.WriteLine(std::format(L"DBT_DEVICEARRIVAL: Volume Mask: {}", pVolume->dbcv_unitmask));
+			break;
+		}
+		case DBT_DEVTYP_PORT:
+		{
+			DEV_BROADCAST_PORT* pPort = reinterpret_cast<DEV_BROADCAST_PORT*>(pHdr);
+			lod.WriteLine(std::format(L"DBT_DEVICEARRIVAL: Port Name: {}", pPort->dbcp_name));
+			break;
+		}
+		case DBT_DEVTYP_OEM:
+		{
+			DEV_BROADCAST_OEM* pOem = reinterpret_cast<DEV_BROADCAST_OEM*>(pHdr);
+			lod.WriteLine(std::format(L"DBT_DEVICEARRIVAL: OEM Identifier: {}, OEM Type: {}", pOem->dbco_identifier, pOem->dbco_suppfunc));
+			break;
+		}
+		default:
+			lod.WriteLine(L"DBT_DEVICEARRIVAL: Unknown device type.");
+			break;
+		}
+	}
+	else
+	{
+		lod.WriteLine(L"DBT_DEVICEARRIVAL: No device information available.");
+	}
 }
 
 void WindowEventHandler::WaitForEvent()
@@ -145,6 +188,31 @@ void WindowEventHandler::WaitForEvent()
 			{
 				OnLockStateChanged(LockStatus::Unlocked);
 			}
+		});
+
+	wmh.RegisterFunction(WM_DEVICECHANGE, [&](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+		{
+			// https://learn.microsoft.com/ja-jp/windows/win32/devio/wm-devicechange
+			// https://learn.microsoft.com/ja-jp/windows-hardware/drivers/kernel/processing-wm_devicechange-messages
+			lod.WriteLine(std::format(L"WM_DEVICECHANGE {}", deviceChangeTable[wp]));
+
+			if (wp == DBT_DEVNODES_CHANGED)
+			{
+				// 詳しい情報をとるには、RegisterDeviceNotification関数を使用してデバイス通知を登録する必要があります
+				// https://learn.microsoft.com/en-us/windows/win32/devio/dbt-devnodes-changed
+				// でもDBT_DEVNODES_CHANGEDは、lpが固定で0だから情報は載ってこないっぽい
+			}
+			if (wp == DBT_DEVICEARRIVAL)
+			{
+				AnalyzeDeviceType(lp);
+			}
+			if (wp == DBT_DEVICEREMOVECOMPLETE)
+			{
+				AnalyzeDeviceType(lp);
+			}
+
+
+
 		});
 
 	// ウインドウ終了待ち

@@ -1,7 +1,10 @@
 #pragma once
-# include <functional>
+#include <functional>
+#include <dbt.h>
 #include "WindowMessageHandler.h"
 #include "LogOnDesktop.h"
+
+#pragma comment(lib, "WtsApi32.lib")
 
 #ifdef _DEBUG
 extern LogOnDesktop lod;
@@ -75,8 +78,25 @@ private:
 		{ WTS_SESSION_CREATE, L"WTS_SESSION_CREATE" },
 		{ WTS_SESSION_TERMINATE, L"WTS_SESSION_TERMINATE" },
 	};
+
+	std::map<WPARAM, std::wstring> deviceChangeTable = std::map<WPARAM, std::wstring>
+	{
+		{ DBT_DEVNODES_CHANGED, L"DBT_DEVNODES_CHANGED" },
+		{ DBT_QUERYCHANGECONFIG, L"DBT_QUERYCHANGECONFIG" },
+		{ DBT_CONFIGCHANGED, L"DBT_CONFIGCHANGED" },
+		{ DBT_CONFIGCHANGECANCELED, L"DBT_CONFIGCHANGECANCELED" },
+		{ DBT_DEVICEARRIVAL, L"DBT_DEVICEARRIVAL" },
+		{ DBT_DEVICEQUERYREMOVE, L"DBT_DEVICEQUERYREMOVE" },
+		{ DBT_DEVICEQUERYREMOVEFAILED, L"DBT_DEVICEQUERYREMOVEFAILED" },
+		{ DBT_DEVICEREMOVEPENDING, L"DBT_DEVICEREMOVEPENDING" },
+		{ DBT_DEVICEREMOVECOMPLETE, L"DBT_DEVICEREMOVECOMPLETE" },
+		{ DBT_DEVICETYPESPECIFIC, L"DBT_DEVICETYPESPECIFIC" },
+		{ DBT_CUSTOMEVENT, L"DBT_CUSTOMEVENT" }
+	};
 #endif
 
+    #ifdef _DEBUG
+    #endif
 	WindowMessageHandler wmh;
 
 	std::function<void(int battRemain)> OnBatteryRemainChanged;

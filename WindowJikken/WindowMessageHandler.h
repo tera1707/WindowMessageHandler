@@ -24,5 +24,7 @@ private:
 
 	static LRESULT CALLBACK WndProcForGetThisPtr(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
+
+	void aaa(HWND hwnd, DWORD guid);
 };
 
